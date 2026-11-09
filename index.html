@@ -30,17 +30,23 @@
         <!-- PLAN TAB -->
         <section id="tab-plan" class="tab-content active space-y-3">
             <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">5-Day Blueprint</h2>
-            <div id="blueprint-list" class="space-y-3">
-                <!-- Injected via JS -->
-            </div>
+            <div id="blueprint-list" class="space-y-3"></div>
         </section>
 
         <!-- TIMER TAB -->
         <section id="tab-timer" class="tab-content space-y-4 text-center">
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg">
-                <h2 id="timer-title" class="text-sm font-semibold uppercase tracking-wider text-blue-400 mb-2">Ready</h2>
-                <div id="timer-display" class="text-6xl font-ext500 tracking-tighter text-white font-mono my-4">40</div>
-                <div id="timer-status" class="text-sm text-slate-400 mb-6">Work Interval</div>
+                <h2 id="timer-title" class="text-sm font-semibold uppercase tracking-wider text-blue-400 mb-2">Interval Timer</h2>
+                
+                <!-- Quick Preset Selector -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button onclick="setTimerPreset(40, 20)" class="bg-slate-900 border border-blue-500/50 hover:bg-slate-700 text-xs py-2 rounded-xl text-blue-400 font-semibold">40s / 20s</button>
+                    <button onclick="setTimerPreset(30, 30)" class="bg-slate-900 border border-slate-700 hover:bg-slate-700 text-xs py-2 rounded-xl text-slate-300">30s / 30s</button>
+                    <button onclick="setTimerPreset(60, 0)" class="bg-slate-900 border border-slate-700 hover:bg-slate-700 text-xs py-2 rounded-xl text-slate-300">60s Work</button>
+                </div>
+
+                <div id="timer-display" class="text-6xl font-ext500 tracking-tighter text-white font-mono my-2">40</div>
+                <div id="timer-status" class="text-sm text-blue-400 font-medium mb-6">Work Interval</div>
                 
                 <div class="flex justify-center gap-3">
                     <button onclick="startTimer()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl shadow">Start</button>
@@ -65,30 +71,30 @@
                     </select>
                 </div>
 
-                <div id="log-exercises-container" class="space-y-3">
-                    <!-- Dynamic exercise inputs -->
-                </div>
+                <div id="log-exercises-container" class="space-y-3"></div>
 
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Rounds Completed</label>
-                    <input type="number" id="log-rounds" value="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white text-center text-lg font-bold">
+                    <div class="flex items-center gap-2">
+                        <button onclick="adjustRounds(-1)" class="bg-slate-900 border border-slate-700 px-4 py-3 rounded-xl text-lg font-bold text-white">-</button>
+                        <input type="number" id="log-rounds" value="4" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl p-3 text-white text-center text-lg font-bold">
+                        <button onclick="adjustRounds(1)" class="bg-slate-900 border border-slate-700 px-4 py-3 rounded-xl text-lg font-bold text-white">+</button>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">How did it feel?</label>
-                    <textarea id="log-notes" rows="2" placeholder="Notes on energy, joints, etc..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Session Notes</label>
+                    <textarea id="log-notes" rows="2" placeholder="Energy level, joint comfort, adjustments..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
                 </div>
 
-                <button onclick="saveWorkout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-xl shadow-lg">Save Workout</button>
+                <button onclick="saveWorkout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-xl shadow-lg">Save & Log Workout</button>
             </div>
         </section>
 
         <!-- HISTORY TAB -->
         <section id="tab-history" class="tab-content space-y-3">
             <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Workout History</h2>
-            <div id="history-list" class="space-y-3">
-                <!-- Injected via JS -->
-            </div>
+            <div id="history-list" class="space-y-3"></div>
         </section>
 
     </main>
@@ -166,13 +172,22 @@
 
             container.innerHTML = defaultExercises.map((ex, i) => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-2 exercise-row">
-                    <input type="text" value="${ex.name}" class="ex-name w-full bg-transparent text-sm font-semibold text-white focus:outline-none border-b border-slate-800 pb-1">
+                    <div class="flex justify-between items-center">
+                        <input type="text" value="${ex.name}" class="ex-name w-full bg-transparent text-sm font-semibold text-white focus:outline-none border-b border-slate-800 pb-1">
+                    </div>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" value="${ex.load}" placeholder="Load / Weight" class="ex-load bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                         <input type="text" value="${ex.reps}" placeholder="Reps / Time" class="ex-reps bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                 </div>
             `).join('');
+        }
+
+        function adjustRounds(amount) {
+            const input = document.getElementById('log-rounds');
+            let val = parseInt(input.value) || 0;
+            val = Math.max(1, val + amount);
+            input.value = val;
         }
 
         function saveWorkout() {
@@ -234,17 +249,33 @@
         }
 
         let timerInterval = null;
+        let workTime = 40;
+        let restTime = 20;
         let timeLeft = 40;
         let isWork = true;
+
+        function setTimerPreset(w, r) {
+            pauseTimer();
+            workTime = w;
+            restTime = r;
+            timeLeft = w;
+            isWork = true;
+            document.getElementById('timer-display').innerText = timeLeft;
+            document.getElementById('timer-status').innerText = r > 0 ? "Work Interval" : "Work Timer";
+        }
 
         function startTimer() {
             if (timerInterval) return;
             timerInterval = setInterval(() => {
                 timeLeft--;
                 if (timeLeft < 0) {
-                    isWork = !isWork;
-                    timeLeft = isWork ? 40 : 20;
-                    document.getElementById('timer-status').innerText = isWork ? "Work Interval" : "Rest Period";
+                    if (restTime > 0) {
+                        isWork = !isWork;
+                        timeLeft = isWork ? workTime : restTime;
+                        document.getElementById('timer-status').innerText = isWork ? "Work Interval" : "Rest Period";
+                    } else {
+                        timeLeft = workTime;
+                    }
                 }
                 document.getElementById('timer-display').innerText = timeLeft;
             }, 1000);
@@ -257,10 +288,10 @@
 
         function resetTimer() {
             pauseTimer();
-            timeLeft = 40;
+            timeLeft = workTime;
             isWork = true;
             document.getElementById('timer-display').innerText = timeLeft;
-            document.getElementById('timer-status').innerText = "Work Interval";
+            document.getElementById('timer-status').innerText = restTime > 0 ? "Work Interval" : "Work Timer";
         }
 
         init();
