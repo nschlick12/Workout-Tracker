@@ -62,7 +62,7 @@
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Select Day</label>
-                    <select id="log-day-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500">
+                    <select id="log-day-select" onchange="setupLogForm()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500">
                         <option value="Day 1">Day 1: Med-High Strength & Conditioning</option>
                         <option value="Day 2">Day 2: Low-Intensity Incline Walk</option>
                         <option value="Day 3">Day 3: Med-High Kettlebell & Functional</option>
@@ -130,7 +130,6 @@
             renderBlueprint();
             renderHistory();
             setupLogForm();
-            document.getElementById('log-day-select').addEventListener('change', setupLogForm);
         }
 
         function switchTab(tabName) {
@@ -166,15 +165,37 @@
                     { name: 'Bent-Over Rows', load: '30lb DBs', reps: '10' },
                     { name: 'Farmer\'s Carry', load: '55lb DB', reps: '40s alt' }
                 ];
-            } else {
-                defaultExercises = [{ name: 'Custom Exercise', load: '', reps: '' }];
+            } else if (selectedDay === 'Day 2') {
+                defaultExercises = [
+                    { name: 'Treadmill Incline Walk', load: '5% - 8% Incline', reps: '30-35 min' }
+                ];
+            } else if (selectedDay === 'Day 3') {
+                defaultExercises = [
+                    { name: 'Goblet Squats', load: '40lb KB', reps: '10' },
+                    { name: 'Farmer\'s Carries', load: '55lb DB', reps: '40s' },
+                    { name: 'Supported Rows', load: '30lb DBs', reps: '10' },
+                    { name: 'Romanian Deadlifts', load: '40lb KB', reps: '10' },
+                    { name: 'KB Swings', load: '35lb KB', reps: '15' }
+                ];
+            } else if (selectedDay === 'Day 4') {
+                defaultExercises = [
+                    { name: 'Dead Bugs', load: 'Bodyweight', reps: '12' },
+                    { name: 'Russian Twists', load: '20lb KB', reps: '15' },
+                    { name: 'Pallof Press', load: 'Band', reps: '10/side' },
+                    { name: 'Face Pulls', load: 'Band', reps: '15' }
+                ];
+            } else if (selectedDay === 'Day 5') {
+                defaultExercises = [
+                    { name: 'Single-Weight Flow (Thrusters)', load: '35lb KB', reps: '8' },
+                    { name: 'Gorilla Rows', load: '35lb KB', reps: '10' },
+                    { name: 'Sumo Deadlift High Pull', load: '35lb KB', reps: '10' },
+                    { name: 'Floor Pullover / Bridge', load: '35lb KB', reps: '10' }
+                ];
             }
 
-            container.innerHTML = defaultExercises.map((ex, i) => `
+            container.innerHTML = defaultExercises.map((ex) => `
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-2 exercise-row">
-                    <div class="flex justify-between items-center">
-                        <input type="text" value="${ex.name}" class="ex-name w-full bg-transparent text-sm font-semibold text-white focus:outline-none border-b border-slate-800 pb-1">
-                    </div>
+                    <input type="text" value="${ex.name}" class="ex-name w-full bg-transparent text-sm font-semibold text-white focus:outline-none border-b border-slate-800 pb-1">
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" value="${ex.load}" placeholder="Load / Weight" class="ex-load bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                         <input type="text" value="${ex.reps}" placeholder="Reps / Time" class="ex-reps bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
